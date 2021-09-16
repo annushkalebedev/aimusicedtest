@@ -100,7 +100,7 @@ def melody_page():
         plot_piano_roll("melody")
 
 
-    # df = pd.read_csv(f"assets/{st.session_state.style}_pitch_markov_{st.session_state.rank}.csv", index_col=0)
+    # df = pd.read_csv(f"{assets_dir}/{st.session_state.style}_pitch_markov_{st.session_state.rank}.csv", index_col=0)
     st.dataframe(st.session_state.df.style.format("{:7,.2f}") )
 
 
@@ -108,9 +108,9 @@ def melody_page():
 
 
     if st.session_state.melody_note_list:
-        st.image("assets/melody.png")
+        st.image(f"{write_dir}/melody.png")
 
-        audio_file = open('assets/melody.wav', 'rb')
+        audio_file = open(f'{write_dir}/melody.wav', 'rb')
         audio_bytes = audio_file.read()
         st.audio(audio_bytes, format='audio/wav')
 

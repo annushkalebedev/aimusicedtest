@@ -92,11 +92,11 @@ def synthaudio(stream, name):
     if len(mf.tracks) >= 3:
         for e in mf.tracks[-1].events:
             e.channel = 10
-    mf.open(f'assets/{name}.mid', 'wb')
+    mf.open(f'{write_dir}/{name}.mid', 'wb')
     mf.write()
     mf.close()
     fs = FluidSynth()
-    fs.midi_to_audio(f'assets/{name}.mid', f'assets/{name}.wav')
+    fs.midi_to_audio(f'{write_dir}/{name}.mid', f'{write_dir}/{name}.wav')
     return 
 
 # input: pretty_midi data
@@ -109,7 +109,7 @@ def get_low_high(midi_data):
 
 # save the pianoroll image
 def plot_piano_roll(name):
-    midi_data = pretty_midi.PrettyMIDI(f'assets/{name}.mid')
+    midi_data = pretty_midi.PrettyMIDI(f'{write_dir}/{name}.mid')
     low, high = get_low_high(midi_data)
 
     fig, ax = plt.subplots(figsize=(12,5))
@@ -123,7 +123,7 @@ def plot_piano_roll(name):
                          fmin=pretty_midi.note_number_to_hz(low-1),
                          cmap="Greens")
     ax.set_xticklabels([])
-    fig.savefig(f'assets/{name}.png', transparent=True)
+    fig.savefig(f'{write_dir}/{name}.png', transparent=True)
     return 
 
 # plot both the melody and melody_b piano roll together
@@ -194,10 +194,10 @@ def prepare_state():
     if 'key_signature' not in st.session_state:
         st.session_state.style = 'C大调'
     if 'mc' not in st.session_state:
-        df = pd.read_csv(f"assets/{st.session_state.style}_pitch_markov_{st.session_state.rank}.csv", index_col=0)
+        df = pd.read_csv(f"{assets_dir}/{st.session_state.style}_pitch_markov_{st.session_state.rank}.csv", index_col=0)
         st.session_state.mc = MarkovChain(np.array(df))
     if 'df' not in st.session_state:
-        st.session_state.df = pd.read_csv(f"assets/{st.session_state.style}_pitch_markov_{st.session_state.rank}.csv", index_col=0)
+        st.session_state.df = pd.read_csv(f"{assets_dir}/{st.session_state.style}_pitch_markov_{st.session_state.rank}.csv", index_col=0)
     if 'ga' not in st.session_state:
         st.session_state.ga = None
     if 'key_weight' not in st.session_state:
@@ -211,7 +211,7 @@ def prepare_state():
 
 # When signature changes, clear the markov chain and start again
 def modify_mc():
-    df = pd.read_csv(f"assets/{st.session_state.style}_pitch_markov_{st.session_state.rank}.csv", index_col=0)
+    df = pd.read_csv(f"{assets_dir}/{st.session_state.style}_pitch_markov_{st.session_state.rank}.csv", index_col=0)
     
     key_idx = PITCHES.index(st.session_state.key_signature[0])
     key_pitches = PITCHES[key_idx:] + PITCHES[:key_idx] # scale of that key

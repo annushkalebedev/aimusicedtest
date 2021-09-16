@@ -4,6 +4,8 @@ import random
 import numpy as np
 import music21 as m2
 
+assets_dir = "assets"
+write_dir = "/tmp"
 
 PITCHES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
 
