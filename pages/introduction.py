@@ -33,7 +33,7 @@ def introduction_page():
             gen_harmony()
 
         if st.session_state.pure_chords:
-            audio_file = open('assets/score.wav', 'rb')
+            audio_file = open(f'{write_dir}/score.wav', 'rb')
             audio_bytes = audio_file.read()
             st.audio(audio_bytes, format='audio/wav')
 
