@@ -102,7 +102,7 @@ def gen_structure():
         st.stop()
     graph = pydot.Dot("my_graph", graph_type="graph", bgcolor="#00000000")
     sentence = generate_full_melody(grammar, graph)
-    graph.write_png(f'{assets_dir}/graph.png')
+    graph.write_png(f'{write_dir}/graph.png')
     write_stream(sentence)
     synthaudio(st.session_state.full_melody, "full_melody")
 
