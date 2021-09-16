@@ -77,17 +77,17 @@ def arrangement_page():
         synthaudio(st.session_state.score, "score")
 
     st.text('旋律')
-    audio_file = open('assets/full_melody.wav', 'rb')
+    audio_file = open(f'{write_dir}/full_melody.wav', 'rb')
     audio_bytes = audio_file.read()
     st.audio(audio_bytes, format='audio/wav')
 
     st.text('和声')
-    audio_file = open('assets/harmony.wav', 'rb')
+    audio_file = open(f'{write_dir}/harmony.wav', 'rb')
     audio_bytes = audio_file.read()
     st.audio(audio_bytes, format='audio/wav')
 
     st.text('全曲')
-    audio_file = open('assets/score.wav', 'rb')
+    audio_file = open(f'{write_dir}/score.wav', 'rb')
     audio_bytes = audio_file.read()
     st.audio(audio_bytes, format='audio/wav')
 
@@ -101,7 +101,7 @@ def arrangement_page():
         synthaudio(st.session_state.score, "score")
 
     st.text('全曲+鼓点')
-    audio_file = open('assets/score.wav', 'rb')
+    audio_file = open(f'{write_dir}/score.wav', 'rb')
     audio_bytes = audio_file.read()
     st.audio(audio_bytes, format='audio/wav')
 

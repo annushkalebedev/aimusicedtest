@@ -12,6 +12,7 @@ from hmmlearn import hmm
 from midi2audio import FluidSynth
 
 from markov import *
+from evolution import *
 import crash
 from params import *
 import pickle
@@ -84,6 +85,23 @@ def init_drum():
 def init_score():
     st.session_state.score = m2.stream.Stream()
     return 
+
+def init_ga():
+    weights = {"key_weight": st.session_state.key_weight,
+            "smoothing_weight": st.session_state.smoothing_weight,
+            "similarity_weight": st.session_state.similarity_weight,
+            "rhythm_weight": st.session_state.rhythm_weight}
+    
+    melody = [m2.note.Note(n).pitch.midi if (n not in ['-', 'R']) else 0 
+            for n in st.session_state.melody_note_list]
+
+    st.session_state.ga = GA(
+        st.session_state.n_measures, 
+        time_sigs[st.session_state.time_signature], 
+        weights, 
+        melody)
+    return 
+
 
 # Synth a music21 stream to midi then to audio 
 def synthaudio(stream, name):
@@ -192,14 +210,14 @@ def prepare_state():
     if 'style' not in st.session_state:
         st.session_state.style = '909'
     if 'key_signature' not in st.session_state:
-        st.session_state.style = 'C大调'
+        st.session_state.key_signature = 'C大调'
+    if 'start_note' not in st.session_state:
+        st.session_state.start_note = 'C'
     if 'mc' not in st.session_state:
         df = pd.read_csv(f"{assets_dir}/{st.session_state.style}_pitch_markov_{st.session_state.rank}.csv", index_col=0)
         st.session_state.mc = MarkovChain(np.array(df))
     if 'df' not in st.session_state:
         st.session_state.df = pd.read_csv(f"{assets_dir}/{st.session_state.style}_pitch_markov_{st.session_state.rank}.csv", index_col=0)
-    if 'ga' not in st.session_state:
-        st.session_state.ga = None
     if 'key_weight' not in st.session_state:
         st.session_state.key_weight = 0.5
     if 'smoothing_weight' not in st.session_state:
@@ -208,11 +226,30 @@ def prepare_state():
         st.session_state.similarity_weight = 0.5
     if 'rhythm_weight' not in st.session_state:
         st.session_state.rhythm_weight = 0.5 
+    if 'num_gen' not in st.session_state:
+        st.session_state.num_gen = 100
+    if 'sol_per_pop' not in st.session_state:
+        st.session_state.sol_per_pop = 64
+    if 'num_parents_mating' not in st.session_state:
+        st.session_state.num_parents_mating = 32
+    if 'ga' not in st.session_state:
+        init_ga()
+    if 'grammar_input' not in st.session_state:
+        st.session_state.grammar_input = '''S -> V C C
+S -> V C V C 
+V -> M1 M2
+V -> B1 M2
+C -> M3 B2
+C -> M1 M3 M3 B2'''
+    if 'temperature' not in st.session_state:
+        st.session_state.temperature = 0.7
 
 # When signature changes, clear the markov chain and start again
 def modify_mc():
     df = pd.read_csv(f"{assets_dir}/{st.session_state.style}_pitch_markov_{st.session_state.rank}.csv", index_col=0)
     
+    st.session_state.start_note = st.session_state.key_signature[0]
+
     key_idx = PITCHES.index(st.session_state.key_signature[0])
     key_pitches = PITCHES[key_idx:] + PITCHES[:key_idx] # scale of that key
     df.columns = key_pitches
@@ -222,15 +259,18 @@ def modify_mc():
 
     st.session_state.df = df
     st.session_state.mc = MarkovChain(np.array(df))
-    print("mc reassigned")
 
     st.session_state.melody_note_list = []
     init_melody()
 
     return 
 
-
-# When tempo changes, resynthesize the audio
+'''
+When tempo changes, resynthesize the audio
+melody, development melodies
+full_melody, harmony
+score, or score with drum track
+'''
 def modify_tempo():
 
     if isinstance(st.session_state.melody[1], m2.tempo.MetronomeMark):
@@ -238,14 +278,24 @@ def modify_tempo():
     st.session_state.melody.insert(1, m2.tempo.MetronomeMark(
                                 number=st.session_state.tempo))
 
+    if isinstance(st.session_state.full_melody[1], m2.tempo.MetronomeMark):
+        st.session_state.full_melody.pop(1)
+    st.session_state.full_melody.insert(1, m2.tempo.MetronomeMark(
+                                number=st.session_state.tempo))
+
     if isinstance(st.session_state.harmony[1], m2.tempo.MetronomeMark):
         st.session_state.harmony.pop(1)
     st.session_state.harmony.insert(1, m2.tempo.MetronomeMark(
                                 number=st.session_state.tempo))
     
-    st.session_state.score = m2.stream.Stream()
-    st.session_state.score.insert(0, st.session_state.full_melody)
-    st.session_state.score.insert(0, st.session_state.harmony)
+    new_score = m2.stream.Stream()
+    new_score.insert(0, st.session_state.full_melody)
+    new_score.insert(0, st.session_state.harmony)
+
+    if len(st.session_state.score) >=3:
+        new_score.insert(0, st.session_state.drum)
+
+    st.session_state.score = new_score
 
     synthaudio(st.session_state.melody, "melody")
     synthaudio(st.session_state.score, "score")

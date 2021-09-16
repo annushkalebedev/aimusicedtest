@@ -56,6 +56,19 @@ def make_patterns():
     return len([n for n in st.session_state.melody_note_list if n == ""])
 
 
+def gen_melody():
+    init_melody()
+    pitch_slots = make_patterns()
+    pitches = st.session_state.mc.generate(PITCHES.index(st.session_state.start_note), pitch_slots)
+    
+    # force an ending
+    pitches[-1] = key_sigs[st.session_state.key_signature].tonic.name
+
+    write_stream(pitches)
+    synthaudio(st.session_state.melody, "melody")
+    plot_piano_roll("melody")
+    return 
+
 def melody_page():
 
     st.header('旋律生成')
@@ -88,16 +101,17 @@ def melody_page():
     #     synthaudio(st.session_state.melody, "melody")
 
     if st.button('一次生成！'):
-        init_melody()
-        pitch_slots = make_patterns()
-        pitches = st.session_state.mc.generate(PITCHES.index(start_note), pitch_slots)
+        # init_melody()
+        # pitch_slots = make_patterns()
+        # pitches = st.session_state.mc.generate(PITCHES.index(start_note), pitch_slots)
         
-        # force an ending
-        pitches[-1] = key_sigs[st.session_state.key_signature].tonic.name
+        # # force an ending
+        # pitches[-1] = key_sigs[st.session_state.key_signature].tonic.name
 
-        write_stream(pitches)
-        synthaudio(st.session_state.melody, "melody")
-        plot_piano_roll("melody")
+        # write_stream(pitches)
+        # synthaudio(st.session_state.melody, "melody")
+        # plot_piano_roll("melody")
+        gen_melody()
 
 
     # df = pd.read_csv(f"{assets_dir}/{st.session_state.style}_pitch_markov_{st.session_state.rank}.csv", index_col=0)

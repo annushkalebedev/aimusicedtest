@@ -51,7 +51,7 @@ def plot_tree(trace):
             graph.add_node(r_node)
             graph.add_edge(pydot.Edge(l_node, r_node))
 
-    graph.write_png('assets/graph.png')
+    graph.write_png(f'{write_dir}/graph.png')
 
     return
 
@@ -93,6 +93,21 @@ def generate_full_melody(grammar, graph, node=None, idx="0_0_0", items=["S"]):
             frags.extend(subfrags)
     return frags
 
+def gen_structure():
+    init_full_melody()
+    try:
+        grammar = parse_grammar(st.session_state.grammar_input)
+    except:
+        st.error('输入的格式有误。请按照[左] -> [右]来定义你的语法。')
+        st.stop()
+    graph = pydot.Dot("my_graph", graph_type="graph", bgcolor="#00000000")
+    sentence = generate_full_melody(grammar, graph)
+    graph.write_png(f'{assets_dir}/graph.png')
+    write_stream(sentence)
+    synthaudio(st.session_state.full_melody, "full_melody")
+
+
+    return 
 
 def structure_page():
     st.header('结构')
@@ -113,7 +128,7 @@ def structure_page():
         S -> V C C 则表示 整首歌 可以展开为 主歌 副歌 副歌。主歌和副歌则可以按照其他的规则展开成我们在前一部分生成的乐句。  
         在下面的输入框中，可以按照[左] -> [右]来定义你自己的音乐结构。一个例子如下：''')
 
-    grammar_input = st.text_area('定义你的生成语法！',
+    st.session_state.grammar_input = st.text_area('定义你的生成语法！',
         height=200, 
         value='''S -> V C C
 S -> V C V C 
@@ -125,13 +140,13 @@ C -> M1 M3 M3 B2''')
     if st.button('解析+生成！'):
         init_full_melody()
         try:
-            grammar = parse_grammar(grammar_input)
+            grammar = parse_grammar(st.session_state.grammar_input)
         except:
             st.error('输入的格式有误。请按照[左] -> [右]来定义你的语法。')
             st.stop()
         graph = pydot.Dot("my_graph", graph_type="graph", bgcolor="#00000000")
         sentence = generate_full_melody(grammar, graph)
-        graph.write_png('assets/graph.png')
+        graph.write_png(f'{write_dir}/graph.png')
         # plot_tree(trace)
         st.text(sentence)
         with st.spinner(text='In progress'):
@@ -139,12 +154,12 @@ C -> M1 M3 M3 B2''')
             synthaudio(st.session_state.full_melody, "full_melody")
     
     if st.session_state.full_melody_note_list:
-        st.image("assets/graph.png")
+        st.image(f"{write_dir}/graph.png")
         with st.beta_expander('全曲'):
             st.text(format_sequence(st.session_state.full_melody_note_list))
 
 
-        audio_file = open('assets/full_melody.wav', 'rb')
+        audio_file = open(f'{write_dir}/full_melody.wav', 'rb')
         audio_bytes = audio_file.read()
         st.audio(audio_bytes, format='audio/wav')
 

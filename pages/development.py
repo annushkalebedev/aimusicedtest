@@ -38,21 +38,36 @@ def write_stream(solution, name, melody="M2"):
 
     return 
 
-def init_ga():
-    weights = {"key_weight": st.session_state.key_weight,
-            "smoothing_weight": st.session_state.smoothing_weight,
-            "similarity_weight": st.session_state.similarity_weight,
-            "rhythm_weight": st.session_state.rhythm_weight}
-    
-    melody = [m2.note.Note(n).pitch.midi if (n not in ['-', 'R']) else 0 
-            for n in st.session_state.melody_note_list]
 
-    st.session_state.ga = GA(
-        st.session_state.n_measures, 
-        time_sigs[st.session_state.time_signature], 
-        weights, 
-        melody)
+def gen_alldev():
+
+    init_ga()
+
+    init_melody_m2()
+    solution = generate_development(st.session_state.ga)
+    write_stream(solution, "melody_m2")
+    synthaudio(st.session_state.melody_m2, "melody_m2")
+
+    init_melody_b1()
+    solution = generate_development(st.session_state.ga,
+        bridge=True)
+    write_stream(solution, "melody_b1", melody="B1")
+    synthaudio(st.session_state.melody_b1, "melody_b1")
+
+    init_melody_m3()
+    solution = generate_development(st.session_state.ga)
+    write_stream(solution, "melody_m3", melody="M3")
+    synthaudio(st.session_state.melody_m3, "melody_m3")
+
+    init_melody_b2()
+    solution = generate_development(st.session_state.ga,
+        bridge=True)
+    write_stream(solution, "melody_b2", melody="B2")
+    synthaudio(st.session_state.melody_b2, "melody_b2")
+
+
     return 
+
 
 def development_page():
     st.header('发展旋律')
@@ -67,7 +82,7 @@ def development_page():
     st.subheader('现有主旋律M1：')
     st.subheader(format_sequence(st.session_state.melody_note_list))
 
-    audio_file = open('assets/melody.wav', 'rb')
+    audio_file = open(f'{write_dir}/melody.wav', 'rb')
     audio_bytes = audio_file.read()
     st.audio(audio_bytes, format='audio/wav')
 
@@ -77,10 +92,6 @@ def development_page():
     init_ga()
 
     st.markdown("""---""")
-
-    NUM_GEN = 100
-    sol_per_pop = 64 # mating pool size
-    num_parents_mating = 32 # population size
 
     cola, colb, colc = st.beta_columns(3)
     with cola:
@@ -124,7 +135,7 @@ def development_page():
         st.markdown(format_sequence(st.session_state.melody_m2_note_list))
 
         if st.session_state.melody_m2_note_list:
-            audio_file = open('assets/melody_m2.wav', 'rb')
+            audio_file = open(f'{write_dir}/melody_m2.wav', 'rb')
             audio_bytes = audio_file.read()
             col1.audio(audio_bytes, format='audio/wav')
 
@@ -139,7 +150,7 @@ def development_page():
         st.markdown(format_sequence(st.session_state.melody_b1_note_list))
 
         if st.session_state.melody_b1_note_list:
-            audio_file = open('assets/melody_b1.wav', 'rb')
+            audio_file = open(f'{write_dir}/melody_b1.wav', 'rb')
             audio_bytes = audio_file.read()
             col1.audio(audio_bytes, format='audio/wav')
 
@@ -165,7 +176,7 @@ def development_page():
         st.markdown(format_sequence(st.session_state.melody_m3_note_list))
 
         if st.session_state.melody_m3_note_list:
-            audio_file = open('assets/melody_m3.wav', 'rb')
+            audio_file = open(f'{write_dir}/melody_m3.wav', 'rb')
             audio_bytes = audio_file.read()
             col2.audio(audio_bytes, format='audio/wav')
 
@@ -180,7 +191,7 @@ def development_page():
         st.markdown(format_sequence(st.session_state.melody_b2_note_list))
 
         if st.session_state.melody_b2_note_list:
-            audio_file = open('assets/melody_b2.wav', 'rb')
+            audio_file = open(f'{write_dir}/melody_b2.wav', 'rb')
             audio_bytes = audio_file.read()
             col2.audio(audio_bytes, format='audio/wav')
 

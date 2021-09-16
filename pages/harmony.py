@@ -52,9 +52,9 @@ def get_downbeat_pitch():
 
 def generate_chords_hmm(seed):
 
-    with open("assets/state_chord_pair.pkl", "rb") as file:
+    with open(f"{assets_dir}/state_chord_pair.pkl", "rb") as file:
         all_pairs = pickle.load(file)
-    with open("assets/hmm.pkl", "rb") as file: 
+    with open(f"{assets_dir}/hmm.pkl", "rb") as file: 
         remodel = pickle.load(file)
 
     all_pairs = list(all_pairs)
@@ -85,7 +85,7 @@ def generate_chords_hmm(seed):
 def generate_chords_rnn(temperature):
 
     model = Seq2Seq(Encoder(), Decoder())
-    model.load_state_dict(torch.load("assets/rnnmodel.pt")['model_state_dict'])
+    model.load_state_dict(torch.load(f"{assets_dir}/rnnmodel.pt")['model_state_dict'])
     model.eval()
 
     indexes, pitches = get_downbeat_pitch()
@@ -116,6 +116,15 @@ def generate_chords_rnn(temperature):
 
     return pure_chords, chords
 
+def gen_harmony():
+    st.session_state.pure_chords, chords = generate_chords_rnn(st.session_state.temperature)
+    write_stream(chords)
+    synthaudio(st.session_state.harmony, "harmony")
+    synthaudio(st.session_state.score, "score")
+    plot_piano_roll("score")
+
+    return 
+
 def harmony_page():
     st.header('和弦')
 
@@ -134,7 +143,7 @@ def harmony_page():
         # print(format_sequence(st.session_state.full_melody_note_list))
         st.text(format_sequence(st.session_state.full_melody_note_list))
 
-    audio_file = open('assets/full_melody.wav', 'rb')
+    audio_file = open(f'{write_dir}/full_melody.wav', 'rb')
     audio_bytes = audio_file.read()
     st.audio(audio_bytes, format='audio/wav')
 
@@ -155,6 +164,7 @@ def harmony_page():
     with col2:
 
         temperature = st.slider("采样温度", min_value=0.05, max_value=1.0, value= 0.7, step=0.05,
+                        key="temperature",
                         help="采样温度, temperature sampling，指的是将预测的概率分布除以一个温度。当温度更高时选择更加发散，温度更低时分布更加保守集中。")
 
         if st.button('RNN'):
@@ -164,12 +174,11 @@ def harmony_page():
             synthaudio(st.session_state.score, "score")
             plot_piano_roll("score")
 
-    st.text(format_sequence(st.session_state.pure_chords, n_per_measure=1))
-
     if st.session_state.pure_chords:
-        st.image("assets/score.png")
+        st.text(format_sequence(st.session_state.pure_chords, n_per_measure=1))
+        st.image(f"{write_dir}/score.png")
 
-        audio_file = open('assets/score.wav', 'rb')
+        audio_file = open(f'{write_dir}/score.wav', 'rb')
         audio_bytes = audio_file.read()
         st.audio(audio_bytes, format='audio/wav')
 
