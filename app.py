@@ -27,7 +27,7 @@ author_credits = st.beta_container()
 
 
 with meta_input:
-    st.session_state.task = st.sidebar.selectbox('Choose Task', ['Introduction', 'Main melody', 'Development Melody', 'Structure', 'Harmony', 'Instrumentation'])
+    st.session_state.task = st.sidebar.selectbox('Choose Task', ['Introduction', 'Main melody', 'Development melody', 'Structure', 'Harmony', 'Instrumentation'])
 
     st.sidebar.header('Parameter Selection') 
 
