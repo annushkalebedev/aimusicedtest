@@ -126,20 +126,19 @@ def gen_harmony():
     return 
 
 def harmony_page():
-    st.header('和弦')
+    st.header('Harmony')
 
-    with st.beta_expander('介绍：和弦页'):
+    with st.beta_expander('Intro: Harmony'):
         st.markdown('''
-        根据刚刚生成的旋律们，我们为其配上和弦，形成一首完整的曲目。 
-        在这里，我们将旋律视作一个序列，而和弦则是与之相对应的新序列。从序列到序列的任务被称作Seq2Seq，并且在不少机器学习任务中得到应用。 
-        我们的 旋律->和弦 任务将由不同的序列模型来实现：HMM, RNN 和 Transformer。
+        From the melodies we just generated, a set of chords are going to accompany them in building up the full song. 
+        Here, we represent the chords as another sequence, and employ models like HMM and RNN to complete the Seq2Seq task. 
         ''')
 
 
     # st.subheader('全曲：')
     # st.subheader(" ".join(st.session_state.full_melody_note_list))
 
-    with st.beta_expander('全曲'):
+    with st.beta_expander('Full song'):
         # print(format_sequence(st.session_state.full_melody_note_list))
         st.text(format_sequence(st.session_state.full_melody_note_list))
 
@@ -151,8 +150,7 @@ def harmony_page():
 
     with col1:
 
-        seed = st.slider("随机种子", min_value=0, max_value=100, value= 42, step=1,
-                help="HMM决定隐藏状态后，将隐藏状态和和弦随机对应起来。")
+        seed = st.slider("Random Seed", min_value=0, max_value=100, value= 42, step=1)
 
         if st.button('HMM'):
             st.session_state.pure_chords, chords = generate_chords_hmm(seed)
@@ -163,9 +161,9 @@ def harmony_page():
 
     with col2:
 
-        temperature = st.slider("采样温度", min_value=0.05, max_value=1.0, value= 0.7, step=0.05,
+        temperature = st.slider("Sampling Temperature", min_value=0.05, max_value=1.0, value= 0.7, step=0.05,
                         key="temperature",
-                        help="采样温度, temperature sampling，指的是将预测的概率分布除以一个温度。当温度更高时选择更加发散，温度更低时分布更加保守集中。")
+                        help="Higher temperature indicates more irregular chords in sampling.")
 
         if st.button('RNN'):
             st.session_state.pure_chords, chords = generate_chords_rnn(temperature)

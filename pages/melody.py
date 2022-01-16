@@ -71,26 +71,25 @@ def gen_melody():
 
 def melody_page():
 
-    st.header('旋律生成')
+    st.header('Generate main melody')
 
-    with st.beta_expander('介绍：主旋律生成'):
+    with st.beta_expander('Intro: Generate main melody'):
         st.markdown('''
-        首先，我们希望生成一条简单的旋律。在这个任务中，我们将使用马尔科夫链来生成前后相关的音高序列，即通过一个转接概率矩阵(transition matrix)，得到基于前N个音后，下一个音的概率。  
-        909, hooktheory和weimarjazz是三个不同风格的数据集。我们已经预先提取了数据中的旋律并且得到其中的转接概率矩阵，不同的风格中，得到音的概率也不一样。
-        在生成音高序列之外，我们的节奏型是从模板而得到的。
+        First, we want to generate a simple melody. In this task, we use Markov Chains to develop a pitch sequence similar to the style of a transition matrix. 
+        909, hooktheory and weimarjazz are three datasets of different music style. We've extracted their melody lines in advance and computed the transition matrix. 
         ''')
 
     col1, col2, col3 = st.beta_columns(3)
 
     with col1:
-        st.session_state.rank = col1.selectbox('选择马尔科夫阶数', [1, 2, 3], 
+        st.session_state.rank = col1.selectbox('Choose Markov order', [1, 2, 3], 
                                 on_change=modify_mc)
     with col2:
-        st.session_state.style = col2.selectbox('选择不同风格的的概率矩阵:', ['909', 'hooktheory', 'weimarjazz'],
+        st.session_state.style = col2.selectbox('Choose transition matrix of different style:', ['909', 'hooktheory', 'weimarjazz'],
                                 on_change=modify_mc) 
 
     with col3:
-        start_note = col3.selectbox('初始音高', options=PITCHES[:12],
+        start_note = col3.selectbox('Starting note', options=PITCHES[:12],
                                 key="start_note", on_change=modify_mc)
         if st.session_state.mc.cur == None: 
             st.session_state.mc.cur = PITCHES.index(start_note)
@@ -100,7 +99,7 @@ def melody_page():
     #     write_stream(note)
     #     synthaudio(st.session_state.melody, "melody")
 
-    if st.button('一次生成！'):
+    if st.button('Generate at once！'):
         # init_melody()
         # pitch_slots = make_patterns()
         # pitches = st.session_state.mc.generate(PITCHES.index(start_note), pitch_slots)

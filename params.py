@@ -17,26 +17,26 @@ EIGHTH = 0.5
 
 time_sigs = {"2/4": 4, "3/4": 6, "4/4": 8, "6/8": 6, "9/8": 9, "12/8": 12}
 
-key_sigs = {"C大调": m2.key.Key("C"), "G大调": m2.key.Key("G"),
-			"D大调": m2.key.Key("D"), "A大调": m2.key.Key("A"),
-			"E大调": m2.key.Key("E")}
+key_sigs = {"C Major": m2.key.Key("C"), "G Major": m2.key.Key("G"),
+			"D Major": m2.key.Key("D"), "A Major": m2.key.Key("A"),
+			"E Major": m2.key.Key("E")}
 
 instr_trans = {
-	'萨克斯': m2.instrument.Saxophone(),
-	'长笛': m2.instrument.Flute(),
-	'双簧管': m2.instrument.Oboe(),
-	'小提琴': m2.instrument.Violin(),
-	'中提琴': m2.instrument.Viola(),
-	'人声': m2.instrument.Vocalist(),
-	'电吉他': m2.instrument.ElectricGuitar(),
+	'Saxophone': m2.instrument.Saxophone(),
+	'Flute': m2.instrument.Flute(),
+	'Oboe': m2.instrument.Oboe(),
+	'Violin': m2.instrument.Violin(),
+	'Viola': m2.instrument.Viola(),
+	'Voice': m2.instrument.Vocalist(),
+	'Electric Guitar': m2.instrument.ElectricGuitar(),
 
-	'木吉他': m2.instrument.AcousticGuitar(),
-	'钢琴': m2.instrument.Piano(),
-	'大键琴': m2.instrument.Clavichord(),
-	'口琴': m2.instrument.Harmonica(),
-	'竖琴': m2.instrument.Harp(),
-	'马林巴': m2.instrument.Marimba(),
-	'弦乐': m2.instrument.StringInstrument()
+	'Acoustic Guitar': m2.instrument.AcousticGuitar(),
+	'Piano': m2.instrument.Piano(),
+	'Harpsichord': m2.instrument.Clavichord(),
+	'Harmonica': m2.instrument.Harmonica(),
+	'Harp': m2.instrument.Harp(),
+	'Marimba': m2.instrument.Marimba(),
+	'Strings': m2.instrument.StringInstrument()
 }
 
 

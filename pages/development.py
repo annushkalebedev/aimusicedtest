@@ -70,16 +70,16 @@ def gen_alldev():
 
 
 def development_page():
-    st.header('发展旋律')
+    st.header('Development melody')
 
-    with st.beta_expander('介绍：发展旋律'):
+    with st.beta_expander('Intro: Development melody'):
         st.markdown('''
-        有了主旋律之后，我们希望创造出更多的旋律素材。在这里，我们使用基因算法(Genetic Algorithm)来生成旋律序列。  
-        每一条旋律都可以表示成一个由MIDI音高值构成的向量，例如\[64, 62, 0, 64, 64, 65, 67, 0\]。基因算法中，向量可以模拟一个种群，在种群中，不同的向量会进行结合与变异。每一轮的“进化”会根据我们期望的规则(音高或者节奏)，选出种群中比较动听的向量(旋律)。经过反复的迭代，随机初始化的种群中会演变出令人满意的旋律。  
-        在这一个任务中，我们生成四条新的旋律素材：M2, M3, B1, B2。
+        After the main melody, we hope to enrich our song with more music materials. Here, we use Genetic Algorithm to generate development melodies. 
+        Each melody can be represented with a vector of MIDI pitch number, such as \[64, 62, 0, 64, 64, 65, 67, 0\]. In genetic algorithm, we use such vectors to simulate a population, where different vectors combine and mutate according to our musical rules. After a number of iterations, the randomly initialized vectors will evolute into satisfying melodies. 
+        In this task, we are going to generate four music lines: M2, M3, B1, B2.
         ''')
 
-    st.subheader('现有主旋律M1：')
+    st.subheader('Existing main melody M1：')
     st.subheader(format_sequence(st.session_state.melody_note_list))
 
     audio_file = open(f'{write_dir}/melody.wav', 'rb')
@@ -95,19 +95,19 @@ def development_page():
 
     cola, colb, colc = st.beta_columns(3)
     with cola:
-        st.slider('进化轮数', min_value=20, max_value=256, 
+        st.slider('Iterations', min_value=20, max_value=256, 
             value= 100, step=2, key="num_gen", on_change=init_ga,
-            help="选择遗传算法需要演化的轮数，20到256之间。")
+            help="Amount of iterations to run，between 20 to 256.")
 
     with colb:
-        st.slider('种群大小', min_value=64, max_value=256, 
+        st.slider('Population size', min_value=64, max_value=256, 
             value= 64, step=4, key="sol_per_pop", on_change=init_ga,
-            help="每一轮用于筛选的序列数量，64到256之间。")
+            help="Amount of population to filter in each iteration.")
 
     with colc:
-        st.slider('生存大小', min_value=16, max_value=64, 
+        st.slider('Mating size', min_value=16, max_value=64, 
             value= 32, step=2, key="num_parents_mating", on_change=init_ga,
-            help="每一轮筛选后生存的序列数量，32到64之间。")
+            help="Amount of population to mate in each iteration.")
 
     st.markdown("""---""")
 
@@ -116,16 +116,16 @@ def development_page():
 
     with col1:
 
-        st.slider('调性权重', min_value=0.0, max_value=1.0, 
+        st.slider('Key weight', min_value=0.0, max_value=1.0, 
             value= 0.5, step=0.05, key="key_weight", on_change=init_ga,
-            help="根据序列中的音高是否在调内增加惩罚。调性权重越高，越容易生成出符合调性的旋律。")
-        st.slider('平滑度权重', min_value=0.0, max_value=1.0, 
+            help="Higher key weight indicates more notes in the key。")
+        st.slider('Smoothing weight', min_value=0.0, max_value=1.0, 
             value= 0.5, step=0.05, key="smoothing_weight", on_change=init_ga,
-            help="旋律的平滑度，指音和音之间距离(音程)的大小。平滑度权重越高，旋律越平缓(好唱)。")
+            help="Higher smoothing weight indicates a smoother melody contour.")
 
         st.markdown("""---""")
 
-        if col1.button('生成旋律M2！'):
+        if col1.button('Generate melody M2！'):
             init_melody_m2()
             with st.spinner(text='In progress'):
                 solution = generate_development(st.session_state.ga)
@@ -139,7 +139,7 @@ def development_page():
             audio_bytes = audio_file.read()
             col1.audio(audio_bytes, format='audio/wav')
 
-        if col1.button('生成过渡B1！'):
+        if col1.button('Generate transition B1！'):
             init_melody_b1()
             with st.spinner(text='In progress'):
                 solution = generate_development(st.session_state.ga,
@@ -156,17 +156,17 @@ def development_page():
 
 
     with col2:
-        st.slider('相似度权重', min_value=0.0, max_value=1.0, 
+        st.slider('Similarity weight', min_value=0.0, max_value=1.0, 
             value= 0.5, step=0.05, key="similarity_weight", on_change=init_ga,
-            help="相似度指的是和主旋律的相似度，权重越高，生成的旋律和主旋律越像。")
-        st.slider('节奏权重', min_value=0.0, max_value=1.0, 
+            help="The similarity between generated melody and main melody.")
+        st.slider('Rhythm weight', min_value=0.0, max_value=1.0, 
             value= 0.5, step=0.05, key="rhythm_weight", on_change=init_ga,
-            help="节奏权重指的是拍点和重拍上的音。权重越高，生成的旋律会更有节奏感。")
+            help="The higher rhythm weight is, the beats are more regular.")
 
         st.markdown("""---""")
 
 
-        if col2.button('生成旋律M3！'):
+        if col2.button('Generate melody M3！'):
             init_melody_m3()
             with st.spinner(text='In progress'):
                 solution = generate_development(st.session_state.ga)
@@ -180,7 +180,7 @@ def development_page():
             audio_bytes = audio_file.read()
             col2.audio(audio_bytes, format='audio/wav')
 
-        if col2.button('生成过渡B2！'):
+        if col2.button('Generate transition B2！'):
             init_melody_b2()
             with st.spinner(text='In progress'):
                 solution = generate_development(st.session_state.ga,

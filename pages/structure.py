@@ -98,7 +98,7 @@ def gen_structure():
     try:
         grammar = parse_grammar(st.session_state.grammar_input)
     except:
-        st.error('输入的格式有误。请按照[左] -> [右]来定义你的语法。')
+        st.error('Error in input. Please strictly follow the syntax of [left] -> [right] to build your grammar. ')
         st.stop()
     graph = pydot.Dot("my_graph", graph_type="graph", bgcolor="#00000000")
     sentence = generate_full_melody(grammar, graph)
@@ -110,25 +110,25 @@ def gen_structure():
     return 
 
 def structure_page():
-    st.header('结构')
+    st.header('Structure')
 
-    with st.beta_expander('介绍'):
+    with st.beta_expander('Intro: Structure'):
         st.markdown('''
-        我们将用生成语法(Generative Grammar)来定义整首曲子的结构。  
-        生成语法总体上认为，应该假设一套规则来描写语言能力。例如用语类规则来描述句子、词组等各种语类的内部结构，用 S → NP + VP来表示一个句子，句子(S)由一个名词词组(NP)加上一个动词词组(VP)构成。这种精确的，形式化的语法称为生成语法。  
-        对于音乐的结构而言，我们定义：  
-        S：歌曲  
-        V：主歌  
-        C：副歌  
-        M1：乐句1  
-        M2：乐句2  
-        M3：乐句3  
-        B1：衔接1  
-        B2：衔接2  
-        S -> V C C 则表示 整首歌 可以展开为 主歌 副歌 副歌。主歌和副歌则可以按照其他的规则展开成我们在前一部分生成的乐句。  
-        在下面的输入框中，可以按照[左] -> [右]来定义你自己的音乐结构。一个例子如下：''')
+        We are going to use Generative Grammar to find out the structure and repeats of the song.
+        Generative Grammar, in summary, is the set of rules to characterize language syntax. For example, S → NP + VP implies that a Sentence(S) is built up by a Noun Phrase (NP) and a Verb Phrase (VP).
+        Similarly, for the syntax of music, we define:  
+        S：Song  
+        V：Verse  
+        C：Chorus  
+        M1：Melody 1  
+        M2：Melody 2  
+        M3：Melody 3  
+        B1：Bridge 1  
+        B2：Bridge 2  
+        For example, S -> V C C represents that a full song can be expanded as Verse + Chorus + Chorus. Verse and Chorus, in turn, can be expanded similarly from other rules into the melodies we generated before.  
+        In the input box below, you can use [left] -> [right] to define your rules of expansion. We provide an example here: ''')
 
-    st.session_state.grammar_input = st.text_area('定义你的生成语法！',
+    st.session_state.grammar_input = st.text_area('Define your generative grammar！',
         height=200, 
         value='''S -> V C C
 S -> V C V C 
@@ -137,12 +137,12 @@ V -> B1 M2
 C -> M3 B2
 C -> M1 M3 M3 B2''')
 
-    if st.button('解析+生成！'):
+    if st.button('Parse + Generate!'):
         init_full_melody()
         try:
             grammar = parse_grammar(st.session_state.grammar_input)
         except:
-            st.error('输入的格式有误。请按照[左] -> [右]来定义你的语法。')
+            st.error('Error in input. Please strictly follow the syntax of [left] -> [right] to build your grammar. ')
             st.stop()
         graph = pydot.Dot("my_graph", graph_type="graph", bgcolor="#00000000")
         sentence = generate_full_melody(grammar, graph)
@@ -155,7 +155,7 @@ C -> M1 M3 M3 B2''')
     
     if st.session_state.full_melody_note_list:
         st.image(f"{write_dir}/graph.png")
-        with st.beta_expander('全曲'):
+        with st.beta_expander('Full song'):
             st.text(format_sequence(st.session_state.full_melody_note_list))
 
 

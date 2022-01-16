@@ -38,7 +38,7 @@ def change_drum():
     if len(st.session_state.score) >=3:
         st.session_state.score = st.session_state.score[:-1]
 
-    if st.session_state.drum_pattern == "无鼓点":
+    if st.session_state.drum_pattern == "No drum track":
         return 
 
     init_drum()
@@ -59,34 +59,34 @@ def change_drum():
     return 
 
 def arrangement_page():
-    st.header('后期')
+    st.header('Instrumentation')
 
     col1, col2 = st.beta_columns(2)
     instruments = list(instr_trans.keys())
     with col1:
-        col1.selectbox('旋律乐器', instruments[:int(len(instruments)/2)],
+        col1.selectbox('Melodic Instrument', instruments[:int(len(instruments)/2)],
             key='melody_instr',
             on_change=change_instrument)
         synthaudio(st.session_state.full_melody, "full_melody")
         synthaudio(st.session_state.score, "score")
     with col2:
-        col2.selectbox('和弦乐器', instruments[int(len(instruments)/2):],
+        col2.selectbox('Harmony Instrument', instruments[int(len(instruments)/2):],
             key='harmony_instr',
             on_change=change_instrument)
         synthaudio(st.session_state.harmony, "harmony")
         synthaudio(st.session_state.score, "score")
 
-    st.text('旋律')
+    st.text('Melody')
     audio_file = open(f'{write_dir}/full_melody.wav', 'rb')
     audio_bytes = audio_file.read()
     st.audio(audio_bytes, format='audio/wav')
 
-    st.text('和声')
+    st.text('Harmony')
     audio_file = open(f'{write_dir}/harmony.wav', 'rb')
     audio_bytes = audio_file.read()
     st.audio(audio_bytes, format='audio/wav')
 
-    st.text('全曲')
+    st.text('Full Song')
     audio_file = open(f'{write_dir}/score.wav', 'rb')
     audio_bytes = audio_file.read()
     st.audio(audio_bytes, format='audio/wav')
@@ -95,12 +95,12 @@ def arrangement_page():
 
     col1, col2 = st.beta_columns(2)
     with col1:
-        col1.selectbox('鼓点节奏', ['无鼓点'] + list(drum_patterns.keys()),
+        col1.selectbox('Drum pattern', ['No drum tack'] + list(drum_patterns.keys()),
             key='drum_pattern',
             on_change=change_drum)
         synthaudio(st.session_state.score, "score")
 
-    st.text('全曲+鼓点')
+    st.text('Full song + drum')
     audio_file = open(f'{write_dir}/score.wav', 'rb')
     audio_bytes = audio_file.read()
     st.audio(audio_bytes, format='audio/wav')
